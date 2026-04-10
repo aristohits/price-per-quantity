@@ -2,66 +2,117 @@
 <html lang="th">
 <head>
   <meta charset="UTF-8" />
-  <title>เปรียบเทียบราคาต่อปริมาณ</title>
+  <title>เปรียบเทียบราคาต่อหน่วย</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    // Initialize theme from localStorage or system preference
+    if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  </script>
 </head>
-<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+<body class="bg-slate-50 dark:bg-slate-950 min-h-screen flex items-center justify-center p-4 transition-colors duration-300 font-sans">
 
-  <div class="bg-white rounded-2xl shadow-lg p-6 w-full max-w-3xl">
-    <h1 class="text-2xl font-bold text-center mb-2">
-      🔍 เปรียบเทียบราคาต่อปริมาณ
-    </h1>
-    <p class="text-center text-gray-500 mb-6">
-      ช่วยเลือกสินค้าที่คุ้มที่สุด
-    </p>
+  <div class="bg-white dark:bg-slate-900 rounded-3xl shadow-2xl p-8 w-full max-w-2xl border border-slate-100 dark:border-slate-800 relative transition-colors duration-300">
+    
+    <!-- Theme Toggle -->
+    <button onclick="toggleTheme()" class="absolute top-6 right-8 p-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all group shadow-sm active:scale-95" aria-label="Toggle Theme">
+      <span class="dark:hidden text-xl">🌙</span>
+      <span class="hidden dark:inline text-xl">☀️</span>
+    </button>
+
+    <header class="text-center mb-10">
+      <div class="inline-flex items-center justify-center p-3 bg-indigo-50 dark:bg-indigo-900/30 rounded-2xl mb-4">
+        <span class="text-3xl">⚖️</span>
+      </div>
+      <h1 class="text-3xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+        เปรียบเทียบราคาต่อหน่วย
+      </h1>
+      <p class="text-slate-500 dark:text-slate-400 mt-2 font-medium">
+        ช่วยคุณเลือกสินค้าที่คุ้มค่าที่สุดในไม่กี่วินาที
+      </p>
+    </header>
 
     <!-- Form -->
-    <form id="compareForm" onsubmit="event.preventDefault(); comparePrice();">
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    <form id="compareForm" onsubmit="event.preventDefault(); comparePrice();" class="space-y-8">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <!-- Product A -->
-        <div class="border rounded-xl p-4">
-          <h2 class="font-semibold mb-3 text-blue-700">สินค้า A</h2>
-          <label for="priceA" class="sr-only">ราคา สินค้า A</label>
-          <input id="priceA" type="number" placeholder="ราคา (บาท)" step="0.01" min="0" inputmode="decimal" required
-            class="w-full mb-2 p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" />
-          
-          <label for="qtyA" class="sr-only">ปริมาณ สินค้า A</label>
-          <input id="qtyA" type="number" placeholder="ปริมาณ" step="any" min="0.0001" inputmode="decimal" required
-            class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" />
+        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 transition-all hover:border-indigo-300 dark:hover:border-indigo-500 group">
+          <h2 class="font-bold mb-4 text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+            สินค้า A
+          </h2>
+          <div class="space-y-3">
+            <div>
+              <label for="priceA" class="sr-only">ราคา สินค้า A</label>
+              <input id="priceA" type="number" placeholder="ราคา (บาท)" step="0.01" min="0" inputmode="decimal" required
+                class="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-900/30 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-400 font-medium text-slate-900 dark:text-white" />
+            </div>
+            
+            <div>
+              <label for="qtyA" class="sr-only">ปริมาณ สินค้า A</label>
+              <input id="qtyA" type="number" placeholder="ปริมาณ" step="any" min="0.0001" inputmode="decimal" required
+                class="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-indigo-100 dark:focus:ring-indigo-900/30 focus:border-indigo-500 outline-none transition-all placeholder:text-slate-400 font-medium text-slate-900 dark:text-white" />
+            </div>
+          </div>
         </div>
 
         <!-- Product B -->
-        <div class="border rounded-xl p-4">
-          <h2 class="font-semibold mb-3 text-blue-700">สินค้า B</h2>
-          <label for="priceB" class="sr-only">ราคา สินค้า B</label>
-          <input id="priceB" type="number" placeholder="ราคา (บาท)" step="0.01" min="0" inputmode="decimal" required
-            class="w-full mb-2 p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" />
-          
-          <label for="qtyB" class="sr-only">ปริมาณ สินค้า B</label>
-          <input id="qtyB" type="number" placeholder="ปริมาณ" step="any" min="0.0001" inputmode="decimal" required
-            class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" />
+        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 transition-all hover:border-emerald-300 dark:hover:border-emerald-500 group">
+          <h2 class="font-bold mb-4 text-emerald-600 dark:text-emerald-400 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            สินค้า B
+          </h2>
+          <div class="space-y-3">
+            <div>
+              <label for="priceB" class="sr-only">ราคา สินค้า B</label>
+              <input id="priceB" type="number" placeholder="ราคา (บาท)" step="0.01" min="0" inputmode="decimal" required
+                class="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-emerald-100 dark:focus:ring-emerald-900/30 focus:border-emerald-500 outline-none transition-all placeholder:text-slate-400 font-medium text-slate-900 dark:text-white" />
+            </div>
+            
+            <div>
+              <label for="qtyB" class="sr-only">ปริมาณ สินค้า B</label>
+              <input id="qtyB" type="number" placeholder="ปริมาณ" step="any" min="0.0001" inputmode="decimal" required
+                class="w-full p-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:ring-4 focus:ring-emerald-100 dark:focus:ring-emerald-900/30 focus:border-emerald-500 outline-none transition-all placeholder:text-slate-400 font-medium text-slate-900 dark:text-white" />
+            </div>
+          </div>
         </div>
       </div>
 
       <!-- Error Message -->
-      <p id="errorMessage" class="hidden mt-4 text-center text-red-500 text-sm font-medium"></p>
+      <div id="errorMessage" class="hidden p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-900/30 text-red-600 dark:text-red-400 text-sm font-semibold text-center"></div>
 
       <!-- Button -->
       <button type="submit"
-        class="mt-6 w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition shadow-md active:scale-[0.98]">
-        🔄 คำนวณเปรียบเทียบ
+        class="w-full bg-slate-900 dark:bg-indigo-600 text-white py-4 rounded-2xl hover:bg-indigo-600 dark:hover:bg-indigo-500 active:scale-[0.98] transition-all shadow-xl shadow-indigo-100 dark:shadow-none font-bold text-lg flex items-center justify-center gap-2 group">
+        <span>🔄</span>
+        คำนวณเปรียบเทียบ
       </button>
     </form>
 
     <!-- Result -->
-    <div id="result" class="mt-6 hidden p-4 rounded-xl bg-gray-50">
-      <p id="resultA"></p>
-      <p id="resultB"></p>
-      <p id="winner" class="font-semibold mt-2"></p>
+    <div id="result" class="mt-10 hidden p-6 rounded-2xl bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50">
+      <div class="space-y-2 mb-4">
+        <p id="resultA" class="text-slate-600 dark:text-slate-300 font-medium"></p>
+        <p id="resultB" class="text-slate-600 dark:text-slate-300 font-medium"></p>
+      </div>
+      <div id="winner" class="p-4 rounded-xl font-bold text-center text-lg shadow-sm"></div>
     </div>
   </div>
 
   <script>
+    function toggleTheme() {
+      if (document.documentElement.classList.contains('dark')) {
+        document.documentElement.classList.remove('dark');
+        localStorage.setItem('theme', 'light');
+      } else {
+        document.documentElement.classList.add('dark');
+        localStorage.setItem('theme', 'dark');
+      }
+    }
+
     function comparePrice() {
       const priceA = parseFloat(document.getElementById("priceA").value);
       const qtyA = parseFloat(document.getElementById("qtyA").value);
@@ -70,6 +121,7 @@
 
       const errorEl = document.getElementById("errorMessage");
       const resultEl = document.getElementById("result");
+      const winner = document.getElementById("winner");
       
       // Reset state
       errorEl.classList.add("hidden");
@@ -100,17 +152,15 @@
       document.getElementById("resultB").innerText =
         `สินค้า B: ${unitB.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 4})} บาท / หน่วย`;
 
-      const winner = document.getElementById("winner");
-
       if (unitA < unitB) {
-        winner.innerText = "✅ สินค้า A คุ้มกว่าครับ";
-        winner.className = "font-semibold mt-2 text-green-600";
+        winner.innerText = "✨ สินค้า A คุ้มค่ากว่า!";
+        winner.className = "p-4 rounded-xl font-bold text-center text-lg shadow-sm bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 animate-bounce-short";
       } else if (unitB < unitA) {
-        winner.innerText = "✅ สินค้า B คุ้มกว่าครับ";
-        winner.className = "font-semibold mt-2 text-green-600";
+        winner.innerText = "✨ สินค้า B คุ้มค่ากว่า!";
+        winner.className = "p-4 rounded-xl font-bold text-center text-lg shadow-sm bg-white dark:bg-slate-800 text-emerald-600 dark:text-emerald-400 animate-bounce-short";
       } else {
-        winner.innerText = "⚖️ ราคาพอๆ กันครับ";
-        winner.className = "font-semibold mt-2 text-yellow-600";
+        winner.innerText = "⚖️ ราคาเท่ากันทั้งสองสินค้า";
+        winner.className = "p-4 rounded-xl font-bold text-center text-lg shadow-sm bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400";
       }
     }
 
@@ -120,6 +170,16 @@
       errorEl.classList.remove("hidden");
     }
   </script>
+
+  <style>
+    @keyframes bounce-short {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+    .animate-bounce-short {
+      animation: bounce-short 1s ease-in-out infinite;
+    }
+  </style>
 
 </body>
 </html>
