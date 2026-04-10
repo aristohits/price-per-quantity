@@ -15,32 +15,43 @@
       ช่วยเลือกสินค้าที่คุ้มที่สุด
     </p>
 
-    <!-- Input -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <!-- Product A -->
-      <div class="border rounded-xl p-4">
-        <h2 class="font-semibold mb-3">สินค้า A</h2>
-        <input id="priceA" type="number" placeholder="ราคา (บาท)"
-          class="w-full mb-2 p-2 border rounded" />
-        <input id="qtyA" type="number" placeholder="ปริมาณ"
-          class="w-full p-2 border rounded" />
+    <!-- Form -->
+    <form id="compareForm" onsubmit="event.preventDefault(); comparePrice();">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <!-- Product A -->
+        <div class="border rounded-xl p-4">
+          <h2 class="font-semibold mb-3 text-blue-700">สินค้า A</h2>
+          <label for="priceA" class="sr-only">ราคา สินค้า A</label>
+          <input id="priceA" type="number" placeholder="ราคา (บาท)" step="0.01" min="0" inputmode="decimal" required
+            class="w-full mb-2 p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" />
+          
+          <label for="qtyA" class="sr-only">ปริมาณ สินค้า A</label>
+          <input id="qtyA" type="number" placeholder="ปริมาณ" step="any" min="0.0001" inputmode="decimal" required
+            class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" />
+        </div>
+
+        <!-- Product B -->
+        <div class="border rounded-xl p-4">
+          <h2 class="font-semibold mb-3 text-blue-700">สินค้า B</h2>
+          <label for="priceB" class="sr-only">ราคา สินค้า B</label>
+          <input id="priceB" type="number" placeholder="ราคา (บาท)" step="0.01" min="0" inputmode="decimal" required
+            class="w-full mb-2 p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" />
+          
+          <label for="qtyB" class="sr-only">ปริมาณ สินค้า B</label>
+          <input id="qtyB" type="number" placeholder="ปริมาณ" step="any" min="0.0001" inputmode="decimal" required
+            class="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500 outline-none" />
+        </div>
       </div>
 
-      <!-- Product B -->
-      <div class="border rounded-xl p-4">
-        <h2 class="font-semibold mb-3">สินค้า B</h2>
-        <input id="priceB" type="number" placeholder="ราคา (บาท)"
-          class="w-full mb-2 p-2 border rounded" />
-        <input id="qtyB" type="number" placeholder="ปริมาณ"
-          class="w-full p-2 border rounded" />
-      </div>
-    </div>
+      <!-- Error Message -->
+      <p id="errorMessage" class="hidden mt-4 text-center text-red-500 text-sm font-medium"></p>
 
-    <!-- Button -->
-    <button onclick="comparePrice()"
-      class="mt-6 w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition">
-      🔄 คำนวณเปรียบเทียบ
-    </button>
+      <!-- Button -->
+      <button type="submit"
+        class="mt-6 w-full bg-blue-600 text-white py-3 rounded-xl hover:bg-blue-700 transition shadow-md active:scale-[0.98]">
+        🔄 คำนวณเปรียบเทียบ
+      </button>
+    </form>
 
     <!-- Result -->
     <div id="result" class="mt-6 hidden p-4 rounded-xl bg-gray-50">
@@ -57,19 +68,37 @@
       const priceB = parseFloat(document.getElementById("priceB").value);
       const qtyB = parseFloat(document.getElementById("qtyB").value);
 
-      if (!priceA || !qtyA || !priceB || !qtyB) {
-        alert("กรุณากรอกข้อมูลให้ครบ");
+      const errorEl = document.getElementById("errorMessage");
+      const resultEl = document.getElementById("result");
+      
+      // Reset state
+      errorEl.classList.add("hidden");
+      resultEl.classList.add("hidden");
+
+      // Validation
+      if (isNaN(priceA) || isNaN(qtyA) || isNaN(priceB) || isNaN(qtyB)) {
+        showError("กรุณากรอกข้อมูลให้ครบถ้วน");
+        return;
+      }
+
+      if (qtyA <= 0 || qtyB <= 0) {
+        showError("ปริมาณต้องมากกว่า 0");
+        return;
+      }
+
+      if (priceA < 0 || priceB < 0) {
+        showError("ราคาไม่สามารถติดลบได้");
         return;
       }
 
       const unitA = priceA / qtyA;
       const unitB = priceB / qtyB;
 
-      document.getElementById("result").classList.remove("hidden");
+      resultEl.classList.remove("hidden");
       document.getElementById("resultA").innerText =
-        `สินค้า A: ${unitA.toFixed(2)} บาท / หน่วย`;
+        `สินค้า A: ${unitA.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 4})} บาท / หน่วย`;
       document.getElementById("resultB").innerText =
-        `สินค้า B: ${unitB.toFixed(2)} บาท / หน่วย`;
+        `สินค้า B: ${unitB.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 4})} บาท / หน่วย`;
 
       const winner = document.getElementById("winner");
 
@@ -83,6 +112,12 @@
         winner.innerText = "⚖️ ราคาพอๆ กันครับ";
         winner.className = "font-semibold mt-2 text-yellow-600";
       }
+    }
+
+    function showError(msg) {
+      const errorEl = document.getElementById("errorMessage");
+      errorEl.innerText = msg;
+      errorEl.classList.remove("hidden");
     }
   </script>
 
