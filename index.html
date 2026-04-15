@@ -199,7 +199,14 @@
       { name: 'cyan', text: 'text-cyan-400', bg: 'bg-cyan-500', border: 'hover:border-cyan-500', ring: 'focus:ring-cyan-900/30', focusBorder: 'focus:border-cyan-500' }
     ];
 
+    function vibrate(ms = 20) {
+      if (typeof navigator !== 'undefined' && navigator.vibrate) {
+        navigator.vibrate(ms);
+      }
+    }
+
     function addProduct() {
+      vibrate(15);
       if (productCount >= 26) return; // Limit to Z
       
       const char = String.fromCharCode(65 + productCount);
@@ -253,6 +260,7 @@
     }
 
     function removeProduct(char) {
+      vibrate(10);
       const card = document.getElementById(`card${char}`);
       if (card) {
         card.classList.add('opacity-0', 'scale-95');
@@ -266,6 +274,7 @@
     }
 
     function openCalculator(id) {
+      vibrate(10);
       activeTargetInput = id;
       calcExpression = '';
       updateCalcDisplay('0');
@@ -275,6 +284,7 @@
     }
 
     function closeCalculator() {
+      vibrate(5);
       document.getElementById('calculatorModal').classList.add('hidden');
       document.getElementById('calculatorModal').classList.remove('flex');
       activeTargetInput = null;
@@ -290,6 +300,7 @@
       } else if (key === 'Escape') {
         closeCalculator();
       } else if (key === 'Backspace') {
+        vibrate(5);
         calcExpression = calcExpression.slice(0, -1);
         updateCalcDisplay(calcExpression);
       } else if (key === 'c' || key === 'C') {
@@ -298,6 +309,7 @@
     }
 
     function calcClick(val) {
+      vibrate(10);
       if (calcExpression === 'Error' || calcExpression === 'Infinity') calcExpression = '';
       
       // Prevent multiple decimals in a single number
@@ -312,11 +324,13 @@
     }
 
     function calcClear() {
+      vibrate(15);
       calcExpression = '';
       updateCalcDisplay('0');
     }
 
     function calcEqual() {
+      vibrate(20);
       if (!calcExpression) return;
       try {
         const result = Function('"use strict";return (' + calcExpression + ')')();
@@ -333,6 +347,7 @@
     }
 
     function applyCalc() {
+      vibrate(25);
       calcEqual();
       const resultValue = parseFloat(calcExpression);
       if (!isNaN(resultValue) && isFinite(resultValue)) {
@@ -348,6 +363,7 @@
 
     // Existing App Logic
     function resetForm() {
+      vibrate(30);
       document.getElementById("compareForm").reset();
       document.getElementById("errorMessage").classList.add("hidden");
       document.getElementById("result").classList.add("hidden");
@@ -367,6 +383,7 @@
     }
 
     function comparePrice() {
+      vibrate(40);
       const container = document.getElementById('productContainer');
       const cards = container.querySelectorAll('[id^="card"]');
       const products = [];
@@ -446,6 +463,7 @@
     }
 
     function showError(msg) {
+      vibrate([50, 30, 50]);
       const errorEl = document.getElementById("errorMessage");
       errorEl.innerText = msg;
       errorEl.classList.remove("hidden");
