@@ -284,7 +284,7 @@ function comparePrice() {
         <div class="flex items-center gap-2">
           <span class="w-2 h-2 rounded-full ${p.colorClass.replace('text-', 'bg-')}"></span>
           <span class="font-bold text-slate-200">สินค้า ${p.id}</span>
-          ${isWinner ? '<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded-md font-bold uppercase tracking-tighter">Winner</span>' : ''}
+          ${isWinner ? '<span class="text-[9px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded-md font-bold uppercase tracking-tighter">Winner</span>' : ''}
         </div>
         <div class="text-right">
           <span class="${p.colorClass} font-extrabold text-lg">${p.unitPrice.toLocaleString('th-TH', formatOptions)}</span>
