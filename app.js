@@ -178,8 +178,21 @@ function updateCalcDisplay(str) {
   document.getElementById('calcDisplay').innerText = str || '0';
 }
 
+function showResetModal() {
+  vibrate(10);
+  document.getElementById('resetModal').classList.remove('hidden');
+  document.getElementById('resetModal').classList.add('flex');
+}
+
+function closeResetModal() {
+  vibrate(5);
+  document.getElementById('resetModal').classList.add('hidden');
+  document.getElementById('resetModal').classList.remove('flex');
+}
+
 function resetForm() {
   vibrate(30);
+  closeResetModal();
   document.getElementById("compareForm").reset();
   document.getElementById("errorMessage").classList.add("hidden");
   document.getElementById("result").classList.add("hidden");
@@ -251,11 +264,34 @@ function comparePrice() {
   const formatOptions = { minimumFractionDigits: 2, maximumFractionDigits: 4 };
   
   products.forEach(p => {
-    const pEl = document.createElement('p');
-    pEl.className = "text-slate-300 font-medium flex justify-between items-center";
+    const isWinner = winners.some(w => w.id === p.id);
+    const pEl = document.createElement('div');
+    pEl.className = `flex flex-col p-4 rounded-xl border transition-all ${isWinner ? 'bg-indigo-900/20 border-indigo-500/30 shadow-inner' : 'bg-slate-800/30 border-slate-700/50'}`;
+    
+    let diffInfo = '';
+    if (!isWinner && winners.length > 0) {
+      const diff = p.unitPrice - minUnitPrice;
+      const savingsPercent = (diff / p.unitPrice) * 100;
+      diffInfo = `
+        <div class="flex justify-between items-center mt-2 pt-2 border-t border-slate-700/30">
+          <span class="text-xs font-semibold text-slate-500 uppercase tracking-wider">ส่วนต่าง</span>
+          <span class="text-xs font-bold text-emerald-400">ประหยัดได้ ${savingsPercent.toFixed(2)}% (-${diff.toLocaleString('th-TH', formatOptions)} บาท)</span>
+        </div>`;
+    }
+
     pEl.innerHTML = `
-      <span>สินค้า ${p.id}:</span>
-      <span class="${p.colorClass}">${p.unitPrice.toLocaleString('th-TH', formatOptions)} บาท / หน่วย</span>
+      <div class="flex justify-between items-center">
+        <div class="flex items-center gap-2">
+          <span class="w-2 h-2 rounded-full ${p.colorClass.replace('text-', 'bg-')}"></span>
+          <span class="font-bold text-slate-200">สินค้า ${p.id}</span>
+          ${isWinner ? '<span class="text-[10px] bg-emerald-500/20 text-emerald-400 px-1.5 py-0.5 rounded-md font-bold uppercase tracking-tighter">Winner</span>' : ''}
+        </div>
+        <div class="text-right">
+          <span class="${p.colorClass} font-extrabold text-lg">${p.unitPrice.toLocaleString('th-TH', formatOptions)}</span>
+          <span class="text-[10px] text-slate-500 font-bold uppercase ml-1">บาท/หน่วย</span>
+        </div>
+      </div>
+      ${diffInfo}
     `;
     resultListEl.appendChild(pEl);
   });
@@ -286,6 +322,7 @@ function showError(msg) {
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
     vibrate, addProduct, removeProduct, openCalculator, closeCalculator,
+    showResetModal, closeResetModal,
     handleCalcKeyboard, calcClick, calcClear, calcEqual, applyCalc,
     updateCalcDisplay, resetForm, comparePrice, showError,
     getCalcExpression: () => calcExpression,

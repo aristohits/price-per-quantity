@@ -161,6 +161,25 @@ describe('App Logic', () => {
       expect(document.getElementById('winner').innerText).toContain('สินค้า B คุ้มค่าที่สุด!');
     });
 
+    it('should display price difference and savings percentage for non-winners', () => {
+      // Product A: 10 baht / 2 units = 5 per unit
+      document.getElementById('priceA').value = '10';
+      document.getElementById('qtyA').value = '2';
+      // Product B: 20 baht / 5 units = 4 per unit
+      document.getElementById('priceB').value = '20';
+      document.getElementById('qtyB').value = '5';
+      
+      app.comparePrice();
+      
+      const resultList = document.getElementById('resultList');
+      const productACard = Array.from(resultList.children).find(el => el.textContent.includes('สินค้า A'));
+      
+      // Difference = 5 - 4 = 1
+      // Savings % = (1 / 5) * 100 = 20%
+      expect(productACard.innerHTML).toContain('ประหยัดได้ 20.00%');
+      expect(productACard.innerHTML).toContain('-1.00 บาท');
+    });
+
     it('should handle tie in value', () => {
       document.getElementById('priceA').value = '10';
       document.getElementById('qtyA').value = '2';
@@ -188,15 +207,32 @@ describe('App Logic', () => {
   });
 
   describe('Form Reset', () => {
-    it('should reset the form and remove extra products', () => {
+    it('should show the reset confirmation modal', () => {
+      app.showResetModal();
+      const modal = document.getElementById('resetModal');
+      expect(modal.classList.contains('hidden')).toBe(false);
+      expect(modal.classList.contains('flex')).toBe(true);
+    });
+
+    it('should close the reset modal', () => {
+      app.showResetModal();
+      app.closeResetModal();
+      const modal = document.getElementById('resetModal');
+      expect(modal.classList.contains('hidden')).toBe(true);
+    });
+
+    it('should reset the form and hide modal when resetForm is called', () => {
       app.addProduct(); // Add C
       document.getElementById('priceA').value = '10';
+      app.showResetModal();
+      
       app.resetForm();
       
       expect(document.getElementById('priceA').value).toBe('');
       expect(document.getElementById('cardC')).toBeNull();
       expect(app.getProductCount()).toBe(2);
       expect(document.getElementById('result').classList.contains('hidden')).toBe(true);
+      expect(document.getElementById('resetModal').classList.contains('hidden')).toBe(true);
     });
   });
 });
